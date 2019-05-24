@@ -19,7 +19,6 @@ entity timer is
 		);
     Port ( clk_i : in  STD_LOGIC;
            reset_i : in  STD_LOGIC;
-			  enable_i : in  STD_LOGIC;
 			  count_o : out  STD_LOGIC
 			 );
 end timer;
@@ -36,7 +35,6 @@ begin
 	process(clk_i)
 		begin
 			if(clk_i'event and clk_i = '1') then
-				if(enable_i = '1') then
 					if(reset_i = '1') then
 						count <= (others => '0');
 						enable <= '0';
@@ -48,8 +46,7 @@ begin
 						count <= count + 1;	
 						enable <= '0';
 					end if;
-				end if;
-		end if;
+		     end if;
 	end process;
 
 end Behavioral;

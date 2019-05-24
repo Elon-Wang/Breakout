@@ -3,18 +3,9 @@ use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.STD_LOGIC_ARITH.ALL;
 use IEEE.STD_LOGIC_UNSIGNED.ALL;
 
--- Uncomment the following library declaration if using
--- arithmetic functions with Signed or Unsigned values
---use IEEE.NUMERIC_STD.ALL;
-
--- Uncomment the following library declaration if instantiating
--- any Xilinx primitives in this code.
---library UNISIM;
---use UNISIM.VComponents.all;
-
 entity Game is
    Port ( 
-			clk_i : in STD_LOGIC;
+			clk_i : in STD_LOGIC;    --The global clock frequency of the board is 100Mhz.
 		   cmd:in std_logic_vector (7 downto 0);
 		   cmd_in:in std_logic;
 			HSYNC_O : out  STD_LOGIC;
@@ -27,25 +18,17 @@ end Game;
 
 architecture Behavioral of Game is
 
-	component hsync
-		Port (  clk_i : in  STD_LOGIC;
-				  reset_i : in  STD_LOGIC;
-				  hsync_o : out  STD_LOGIC;
-				  rowclk_o : out  STD_LOGIC;
-				  hvidon_o : out  STD_LOGIC;
-				  col_o : out  STD_LOGIC_VECTOR (9 downto 0)
-		);
-	end component;	
-
-	component vsync
-		Port (  clk_i : in  STD_LOGIC;
-				  reset_i : in  STD_LOGIC;
-				  rowclk_i : in  STD_LOGIC;
-				  vsync_o : out  STD_LOGIC;
-				  vvidon_o : out  STD_LOGIC;
-				  row_o : out  STD_LOGIC_VECTOR (9 downto 0)
-		);
-	end component;
+    component VGA_driver is
+      Port (clk_i: in std_logic;  -- 50MHz
+            reset_i: in std_logic;
+            hsync_o: out std_logic;
+            vsync_o: out std_logic;
+            houtput: out std_logic;
+            voutput: out std_logic;
+            colum: out std_logic_vector( 9 downto 0);
+            row: out std_logic_vector( 9 downto 0)
+             );
+    end component;
 	
 	component timer
 		Generic( 
@@ -200,29 +183,17 @@ architecture Behavioral of Game is
     signal pause :  STD_lOGIC;
 begin
     
-	Hsy : hsync
-	port map
-	(
-		clk_i => clk_i,
-		reset_i => reset,
-		hsync_o => HSYNC_O,
-		rowclk_o => rwc,
-		hvidon_o => hvid,
-		col_o => colData
-	);
-	
-	Vsy : vsync
-	port map
-	(
-		clk_i => clk_i,
-		reset_i => reset,
-		rowclk_i => rwc,
-		vsync_o => VSYNC_O,
-		vvidon_o => vvid,
-		row_o => rowData
-	);
-	
-
+    VGA_controller: vga_driver 
+        port map(
+            clk_i=> clk_i,
+            reset_i=>reset,
+            hsync_o =>HSYNC_O,
+            vsync_o =>VSYNC_O,
+            hOutput =>hvid,
+            vOutput =>vvid,
+            colum   =>colData,
+            row     =>rowData
+             );	
 	
 	PLOSCAD_time : timer
 	generic map (
