@@ -33,7 +33,9 @@ architecture Behavioral of VGA_driver is
     signal vcounter: std_logic_vector(9 downto 0);
     signal Row_cnt: std_logic;
 begin
-
+    colum <= hcounter;
+    row   <= vcounter;
+    
     H_total : counter
     generic map (
         data_width => 10,
