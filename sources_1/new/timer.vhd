@@ -1,3 +1,22 @@
+---------------------------------------------------------------------------------
+-- Company: 
+-- Engineer: 
+-- 
+-- Create Date:    17:37:41 02/23/2017 
+-- Design Name: 
+-- Module Name:    timer - Behavioral 
+-- Project Name: 
+-- Target Devices: 
+-- Tool versions: 
+-- Description: 
+--
+-- Dependencies: 
+--
+-- Revision: 
+-- Revision 0.01 - File Created
+-- Additional Comments: 
+--
+----------------------------------------------------------------------------------
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.STD_LOGIC_ARITH.ALL;
@@ -15,10 +34,11 @@ use IEEE.STD_LOGIC_UNSIGNED.ALL;
 entity timer is
 	 Generic( 
 			data_width:integer := 25;
-			maxVrednost:integer := 250000
+			maxValue:integer := 250000
 		);
     Port ( clk_i : in  STD_LOGIC;
            reset_i : in  STD_LOGIC;
+			  enable_i : in  STD_LOGIC;
 			  count_o : out  STD_LOGIC
 			 );
 end timer;
@@ -35,18 +55,20 @@ begin
 	process(clk_i)
 		begin
 			if(clk_i'event and clk_i = '1') then
+				if(enable_i = '1') then
 					if(reset_i = '1') then
 						count <= (others => '0');
 						enable <= '0';
 					end if;
-					if(count = (maxVrednost-1)) then
+					if(count = (maxValue-1)) then
 						count <= (others => '0');
 						enable <= '1';
 					else
 						count <= count + 1;	
 						enable <= '0';
 					end if;
-		     end if;
+				end if;
+		end if;
 	end process;
 
 end Behavioral;

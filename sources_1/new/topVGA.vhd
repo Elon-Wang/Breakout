@@ -18,17 +18,25 @@ end Game;
 
 architecture Behavioral of Game is
 
-    component VGA_driver is
-      Port (clk_i: in std_logic;  -- 50MHz
-            reset_i: in std_logic;
-            hsync_o: out std_logic;
-            vsync_o: out std_logic;
-            houtput: out std_logic;
-            voutput: out std_logic;
-            colum: out std_logic_vector( 9 downto 0);
-            row: out std_logic_vector( 9 downto 0)
-             );
-    end component;
+    	component hsync
+    Port (  clk_i : in  STD_LOGIC;
+              reset_i : in  STD_LOGIC;
+              hsync_o : out  STD_LOGIC;
+              rowclk_o : out  STD_LOGIC;
+              hvidon_o : out  STD_LOGIC;
+              col_o : out  STD_LOGIC_VECTOR (9 downto 0)
+    );
+end component;    
+
+component vsync
+    Port (  clk_i : in  STD_LOGIC;
+              reset_i : in  STD_LOGIC;
+              rowclk_i : in  STD_LOGIC;
+              vsync_o : out  STD_LOGIC;
+              vvidon_o : out  STD_LOGIC;
+              row_o : out  STD_LOGIC_VECTOR (9 downto 0)
+    );
+end component;
 	
 	component timer
 		Generic( 
@@ -182,23 +190,34 @@ architecture Behavioral of Game is
     signal reset :  STD_LOGIC;
     signal pause :  STD_lOGIC;
 begin
-    
-    VGA_controller: vga_driver 
-        port map(
-            clk_i=> clk_i,
-            reset_i=>reset,
-            hsync_o =>HSYNC_O,
-            vsync_o =>VSYNC_O,
-            hOutput =>hvid,
-            vOutput =>vvid,
-            colum   =>colData,
-            row     =>rowData
-             );	
+
+
+	Hsy : hsync
+	port map
+	(
+		clk_i => clk_i,
+		reset_i => reset,
+		hsync_o => HSYNC_O,
+		rowclk_o => rwc,
+		hvidon_o => hvid,
+		col_o => colData
+	);
+	
+	Vsy : vsync
+	port map
+	(
+		clk_i => clk_i,
+		reset_i => reset,
+		rowclk_i => rwc,
+		vsync_o => VSYNC_O,
+		vvidon_o => vvid,
+		row_o => rowData
+	);
 	
 	PLOSCAD_time : timer
 	generic map (
 		data_width => 25,
-		maxValue => 500000
+		maxValue => 100000
 	 )
 	port map (
 		clk_i => clk_i,
@@ -210,7 +229,7 @@ begin
 	BALL_time : timer
 	generic map (
 		data_width => 25,
-		maxValue => 250000 	
+		maxValue => 300000 	
 	 )
 	port map (
 		clk_i => clk_i,
